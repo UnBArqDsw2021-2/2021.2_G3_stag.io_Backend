@@ -1,0 +1,29 @@
+{
+  "name": "2021.2_g3_stag.io_backend",
+  "version": "1.0.0",
+  "description": "Backend da aplicação stag.io",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon -L index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UnBArqDsw2021-2/2021.2_G3_stag.io_Backend.git"
+  },
+  "keywords": [
+    "api",
+    "server",
+    "backend"
+  ],
+  "author": "Italo Vinicius",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UnBArqDsw2021-2/2021.2_G3_stag.io_Backend/issues"
+  },
+  "homepage": "https://github.com/UnBArqDsw2021-2/2021.2_G3_stag.io_Backend#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "nodemon": "^2.0.15"
+  }
+}
