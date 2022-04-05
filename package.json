@@ -23,7 +23,10 @@
   },
   "homepage": "https://github.com/UnBArqDsw2021-2/2021.2_G3_stag.io_Backend#readme",
   "dependencies": {
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
     "express": "^4.17.3",
-    "nodemon": "^2.0.15"
+    "mssql": "^8.0.2",
+    "nodemon": "^2.0.15" 
   }
 }
