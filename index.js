@@ -41,8 +41,8 @@ const router = express.Router();
 router.get("/", (req, res) => res.send("API no ar!"));
 app.use("/", router);
 
-app.get("/teste", async (req, res) => {
-  const response = await sql.query`SELECT * from teste`;
+app.get("/escolaridade", async (req, res) => {
+  const response = await sql.query`SELECT * from ESCOLARIDADE`;
   console.log(response);
   res.send(response.recordset);
 });
@@ -133,6 +133,18 @@ app.get("/login", async (req, res) => {
   } else {
     res.status(500).send("Algo deu errado!");
   }
+});
+
+app.listen(PORT, HOST, () => console.log(`Listening on port ${PORT}`)); //Informa a porta por qual o serviço está "ouvindo"
+//Função que recupera um candidato a partir de seu cpf
+app.post("/getCandidato", async (req, res) => {
+  const cpfCandidato = req.body.cpfCandidato;
+
+  const response = await sql.query`SELECT *
+                                     FROM CANDIDATO
+                                    WHERE cpf = ${cpfCandidato}`;
+
+  res.send(response.recordset);
 });
 
 app.listen(PORT, HOST, () => console.log(`Listening on port ${PORT}`)); //Informa a porta por qual o serviço está "ouvindo"
