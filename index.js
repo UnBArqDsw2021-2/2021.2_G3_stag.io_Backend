@@ -63,10 +63,9 @@ app.post("/cadastro", async (req, res) => {
     const descricaoCandidato = corpo.descricaoCandidato;
 
     if (corpo.email !== undefined) {
-      var email = corpo.email
-    }
-    else{
-      var email = ''
+      var email = corpo.email;
+    } else {
+      var email = "";
     }
 
     if (corpo.nomeInstituicao !== undefined) {
@@ -94,23 +93,25 @@ app.post("/cadastro", async (req, res) => {
       res.status(500).send("Candidato já existe");
     } else {
       console.log("Cadastra candidato");
-      const queryInsereCandidato =
-        await sql.query`INSERT INTO 
+      const queryInsereCandidato = await sql.query`INSERT INTO 
         CANDIDATO(cpf,senha,nomeCompleto,email,descricaoCandidato,curriculo,idEscolaridade,idInstituicao,idCurso,idLocalizacao,areasInteresse) 
            VALUES(${cpf},${senha},${nome},${email},${descricaoCandidato},NULL,${idEscolaridade},${idInstituicao},${idCurso},${idLocalizacao},${areasInteresse})`;
-      
+
       res.send("Cadastra candidato");
     }
   } else if (tipoUsuario === "empresa") {
     if (await helper.verificaEmpresaExiste(sql, corpo.cnpj))
       res.status(500).send("Empresa já cadastrada no sistema");
-    else
-    {
-      let idLocalizacao = await helper.getIdLocalizacao(sql, corpo.cidade, corpo.uf);
-  
-      await sql.query `INSERT INTO EMPRESA
+    else {
+      let idLocalizacao = await helper.getIdLocalizacao(
+        sql,
+        corpo.cidade,
+        corpo.uf
+      );
+
+      await sql.query`INSERT INTO EMPRESA
                       VALUES(${corpo.cnpj}, ${corpo.senha}, ${corpo.nomeEmpresa}, ${corpo.siteEmpresa}, ${corpo.descricaoEmpresa}, ${idLocalizacao})`;
-  
+
       res.send("Empresa cadastrada");
     }
   }
@@ -124,18 +125,33 @@ app.get("/login", async (req, res) => {
   if (credencial.length == 14) {
     console.log("CNPJ recebido");
 
-    const query =
+    const queryEmpresa =
       await sql.query`SELECT * from EMPRESA WHERE cnpj=${credencial} AND senha=${senha}`;
 
-    console.log(query);
+    if (queryEmpresa.rowsAffected[0] == 1) {
+      const idEmpresa = queryEmpresa.recordset[0].cnpj;
+
+      res.send({ tipoUsuario: "empresa", idEmpresa: idEmpresa });
+    } else {
+      res.status(500).send("Empresa não encontrada");
+    }
   } else if (credencial.length == 11) {
     console.log("CPF recebido");
+
+    const queryCandidato = await sql.query`SELECT cpf FROM CANDIDATO WHERE cpf = ${credencial} AND senha = ${senha}`;
+
+    if (queryCandidato.rowsAffected[0] == 1) {
+      const idCandidato = queryCandidato.recordset[0].cpf;
+
+      res.send({ tipoUsuario: "candidato", idCandidato: idCandidato });
+    } else {
+      res.status(500).send("Candidato não encontrado");
+    }
   } else {
     res.status(500).send("Algo deu errado!");
   }
 });
 
-app.listen(PORT, HOST, () => console.log(`Listening on port ${PORT}`)); //Informa a porta por qual o serviço está "ouvindo"
 //Função que recupera um candidato a partir de seu cpf
 app.post("/getCandidato", async (req, res) => {
   const cpfCandidato = req.body.cpfCandidato;
@@ -147,4 +163,4 @@ app.post("/getCandidato", async (req, res) => {
   res.send(response.recordset);
 });
 
-app.listen(PORT, HOST, () => console.log(`Listening on port ${PORT}`)); //Informa a porta por qual o serviço está "ouvindo"
+app.listen(PORT, HOST, () => console.log(`Ouvindo na porta ${PORT}`)); //Informa a porta por qual o serviço está "ouvindo"
