@@ -163,4 +163,42 @@ app.post("/getCandidato", async (req, res) => {
   res.send(response.recordset);
 });
 
+app.get("/getVaga", async (req, res) => {
+  const idVaga = req.body.idVaga;
+
+  const response = await sql.query`SELECT *
+                                     FROM VAGA
+                                     WHERE idVaga = ${idVaga}`;
+
+  res.send(response.recordset);
+});
+
+app.get("/getVagasCandidato", async (req, res) => {
+  const cpfCandidato = req.body.cpfCandidato;
+
+  const response = await sql.query`SELECT V.*
+                                     FROM deseja d INNER JOIN
+                                     VAGA V ON d.idVaga = V.idVaga
+                                     WHERE d.cpfCandidato = ${cpfCandidato}`;
+
+  res.send(response.recordset);
+});
+
+app.get("/getAllVagas", async (req, res) => {
+  // TODO: receber filtros
+
+  const response = await sql.query`SELECT *
+                                     FROM VAGA`;
+  // TODO: filtrar SELECT
+});
+
+app.delete("/delVaga", async (req, res) => {
+  const idVaga = req.body.idVaga;
+
+  await sql.query`DELETE VAGA
+                   WHERE idVaga = ${idVaga}`;
+
+  res.send("Vaga Excluída");
+});
+
 app.listen(PORT, HOST, () => console.log(`Ouvindo na porta ${PORT}`)); //Informa a porta por qual o serviço está "ouvindo"
