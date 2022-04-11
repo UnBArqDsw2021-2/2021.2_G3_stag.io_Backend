@@ -138,7 +138,8 @@ app.get("/login", async (req, res) => {
   } else if (credencial.length == 11) {
     console.log("CPF recebido");
 
-    const queryCandidato = await sql.query`SELECT cpf FROM CANDIDATO WHERE cpf = ${credencial} AND senha = ${senha}`;
+    const queryCandidato =
+      await sql.query`SELECT cpf FROM CANDIDATO WHERE cpf = ${credencial} AND senha = ${senha}`;
 
     if (queryCandidato.rowsAffected[0] == 1) {
       const idCandidato = queryCandidato.recordset[0].cpf;
@@ -152,8 +153,81 @@ app.get("/login", async (req, res) => {
   }
 });
 
+app.post("/cadastraVaga", async (req, res) => {
+  const corpo = req.body;
+
+  const tituloVaga = corpo.tituloVaga;
+  const descricaoVaga = corpo.descricaoVaga;
+  const modeloTrabalho = corpo.modeloTrabalho;
+  const cargaHoraria = corpo.cargaHoraria;
+  const requisitos = corpo.requisitos;
+  const privilegios = corpo.privilegios;
+  const tags = corpo.tags;
+  const bolsa = corpo.bolsa;
+  const status = 1;
+  const idEscolaridade = corpo.idEscolaridade;
+  const idEmpresa = corpo.idEmpresa;
+  const cidade = corpo.cidade;
+  const uf = corpo.uf;
+
+  let idLocalizacao = await helper.getIdLocalizacao(sql, cidade, uf);
+
+  const query =
+    await sql.query`INSERT INTO VAGA(tituloVaga,descricaoVaga,modeloTrabalho,cargaHoraria,requisitos,privilegios,tags,bolsa,status,cnpjEmpresa,idLocalizacao,idEscolaridade)
+                                    VALUES(${tituloVaga},${descricaoVaga},${modeloTrabalho},${cargaHoraria},${requisitos},${privilegios},${tags},${bolsa},${status},${idEmpresa},${idLocalizacao},${idEscolaridade})`;
+
+  if (query.rowsAffected[0] == 1) {
+    res.send("Vaga cadastrada");
+  } else {
+    res.status(500).send("Falha ao cadastrar vaga");
+  }
+});
+
+app.put("/atualizarVaga", async (req,res) => {
+  const corpo = req.body;
+
+  const idVaga = corpo.idVaga;
+  const tituloVaga = corpo.tituloVaga;
+  const descricaoVaga = corpo.descricaoVaga;
+  const modeloTrabalho = corpo.modeloTrabalho;
+  const cargaHoraria = corpo.cargaHoraria;
+  const requisitos = corpo.requisitos;
+  const privilegios = corpo.privilegios;
+  const tags = corpo.tags;
+  const bolsa = corpo.bolsa;
+  const status = corpo.status;
+  const idEscolaridade = corpo.idEscolaridade;
+  const idEmpresa = corpo.idEmpresa;
+  const cidade = corpo.cidade;
+  const uf = corpo.uf;
+
+  let idLocalizacao = await helper.getIdLocalizacao(sql, cidade, uf);
+
+  const query =
+    await sql.query`UPDATE VAGA
+                       SET tituloVaga = ${tituloVaga},
+                           descricaoVaga = ${descricaoVaga},
+                           modeloTrabalho = ${modeloTrabalho},
+                           cargaHoraria = ${cargaHoraria},
+                           requisitos = ${requisitos},
+                           privilegios = ${privilegios},
+                           tags = ${tags},
+                           bolsa = ${bolsa},
+                           status = ${status},
+                           cnpjEmpresa = ${idEmpresa},
+                           idLocalizacao = ${idLocalizacao},
+                           idEscolaridade = ${idEscolaridade}
+                     WHERE idVaga = ${idVaga}`;
+
+  if (query.rowsAffected[0] == 1) {
+    res.send("Vaga atualizada!");
+  } else {
+    res.status(500).send("Falha ao atualizar vaga");
+  }
+})
+
 //Função que recupera um candidato a partir de seu cpf
-app.post("/getCandidato", async (req, res) => {
+app.get("/getCandidato", async (req, res) => {
   const cpfCandidato = req.body.cpfCandidato;
 
   const response = await sql.query`SELECT *
@@ -161,6 +235,24 @@ app.post("/getCandidato", async (req, res) => {
                                     WHERE cpf = ${cpfCandidato}`;
 
   res.send(response.recordset);
+});
+
+// Função que candidata em uma vaga
+app.post("/candidataVaga", async (req, res) => {
+  const cpfCandidato = req.body.cpfCandidato;
+  const idVaga = req.body.idVaga;
+
+  var hoje = new Date();
+  var dd = String(hoje.getDate()).padStart(2, "0");
+  var mm = String(hoje.getMonth() + 1).padStart(2, "0"); //Janeiro é 0!
+  var yyyy = hoje.getFullYear();
+
+  hoje = yyyy + mm + dd;
+
+  await sql.query`INSERT INTO deseja (cpfCandidato, idVaga, dataInicioDeseja)
+                              VALUES (${cpfCandidato}, ${idVaga}, ${hoje})`;
+
+  res.send("Candidatura realizada");
 });
 
 app.listen(PORT, HOST, () => console.log(`Ouvindo na porta ${PORT}`)); //Informa a porta por qual o serviço está "ouvindo"
