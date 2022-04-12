@@ -242,17 +242,22 @@ app.post("/candidataVaga", async (req, res) => {
   const cpfCandidato = req.body.cpfCandidato;
   const idVaga = req.body.idVaga;
 
-  var hoje = new Date();
-  var dd = String(hoje.getDate()).padStart(2, "0");
-  var mm = String(hoje.getMonth() + 1).padStart(2, "0"); //Janeiro é 0!
-  var yyyy = hoje.getFullYear();
-
-  hoje = yyyy + mm + dd;
-
-  await sql.query`INSERT INTO deseja (cpfCandidato, idVaga, dataInicioDeseja)
-                              VALUES (${cpfCandidato}, ${idVaga}, ${hoje})`;
-
-  res.send("Candidatura realizada");
+  if (await helper.verificaCandidaturaExiste(sql, cpfCandidato, idVaga))
+      res.status(500).send("Usuário já concorrendo à vaga");
+  else
+  {
+    var hoje = new Date();
+    var dd = String(hoje.getDate()).padStart(2, "0");
+    var mm = String(hoje.getMonth() + 1).padStart(2, "0"); //Janeiro é 0!
+    var yyyy = hoje.getFullYear();
+  
+    hoje = yyyy + mm + dd;
+  
+    await sql.query`INSERT INTO deseja (cpfCandidato, idVaga, dataInicioDeseja)
+                                VALUES (${cpfCandidato}, ${idVaga}, ${hoje})`;
+  
+    res.send("Candidatura realizada");
+  }
 });
 
 app.get("/getVaga", async (req, res) => {
