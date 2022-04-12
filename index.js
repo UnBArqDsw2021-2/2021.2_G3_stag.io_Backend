@@ -8,21 +8,24 @@ const sql = require("mssql");
 const PORT = process.env.PORT || 3001;
 const HOST = "0.0.0.0";
 
-// app.get('/', (req,res) => {
-//     res.send('Hello world')
-// })
-
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const credentials = require("./credentials");
+require('dotenv').config();
 
-app.get("/credentials", (req, res) => {
-  res.send(credentials);
-});
+const credentials = {
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  server: process.env.SERVER,
+  database: process.env.DATABASE,
+  options: {
+    encrypt: true,
+    enableArithAbort: true,
+  },
+};
 
 //Informações de conexão com o banco
 sql
@@ -40,12 +43,6 @@ sql
 const router = express.Router();
 router.get("/", (req, res) => res.send("API no ar!"));
 app.use("/", router);
-
-app.get("/escolaridade", async (req, res) => {
-  const response = await sql.query`SELECT * from ESCOLARIDADE`;
-  console.log(response);
-  res.send(response.recordset);
-});
 
 app.post("/cadastro", async (req, res) => {
   const corpo = req.body;
