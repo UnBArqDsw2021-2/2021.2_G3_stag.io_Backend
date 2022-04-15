@@ -11,8 +11,9 @@ const HOST = "0.0.0.0";
 const app = express();
 
 app.use(cors({
-  origin: false,
-  // methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+  origin: '*',
+  methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'],
+  credentials: true
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
