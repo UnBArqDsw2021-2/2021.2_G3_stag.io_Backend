@@ -10,7 +10,10 @@ const HOST = "0.0.0.0";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -44,7 +47,7 @@ const router = express.Router();
 router.get("/", (req, res) => res.send("API no ar!"));
 app.use("/", router);
 
-app.post("/cadastro", cors(), async (req, res) => {
+app.post("/cadastro", async (req, res) => {
   const corpo = req.body;
   const tipoUsuario = corpo.tipoUsuario;
 
