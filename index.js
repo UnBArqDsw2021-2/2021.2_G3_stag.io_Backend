@@ -320,7 +320,7 @@ app.get("/getAllVagas", async (req, res) => {
   // TODO: receber filtros
 
   const response = await sql.query`SELECT v.idVaga, v.tituloVaga, v.descricaoVaga, v.modeloTrabalho, v.cargaHoraria, v.requisitos, v.privilegios, v. tags, v.bolsa, v.status,
-                                          V.cnpjEmpresa, E.nomeEmpresa,
+                                          V.cnpjEmpresa, E.nomeEmpresa, E.siteEmpresa,
                                           ESC.nomeEscolaridade, L.uf, L.cidade
                                      FROM VAGA V INNER JOIN
                                           EMPRESA E ON E.cnpj = V.cnpjEmpresa INNER JOIN
