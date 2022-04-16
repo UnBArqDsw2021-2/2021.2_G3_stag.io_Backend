@@ -119,7 +119,7 @@ app.post("/cadastro", async (req, res) => {
 });
 
 app.get("/login", async (req, res) => {
-  const corpo = req.body;
+  const corpo = req.query;
   console.log(req)
   console.log(corpo)
   const credencial = corpo.credencial;
@@ -238,7 +238,7 @@ app.put("/atualizarVaga", async (req,res) => {
 
 //Função que recupera um candidato a partir de seu cpf
 app.get("/getCandidato", async (req, res) => {
-  const cpfCandidato = req.body.cpfCandidato;
+  const cpfCandidato = req.query.cpfCandidato;
 
   const response = await sql.query`SELECT *
                                      FROM CANDIDATO
@@ -271,7 +271,7 @@ app.post("/candidataVaga", async (req, res) => {
 });
 
 app.get("/getVaga", async (req, res) => {
-  const idVaga = req.body.idVaga;
+  const idVaga = req.query.idVaga;
 
   const response = await sql.query`SELECT *
                                      FROM VAGA
@@ -281,7 +281,7 @@ app.get("/getVaga", async (req, res) => {
 });
 
 app.get("/getVagasCandidato", async (req, res) => {
-  const cpfCandidato = req.body.cpfCandidato;
+  const cpfCandidato = req.query.cpfCandidato;
 
   const response = await sql.query`SELECT V.*
                                      FROM deseja d INNER JOIN
@@ -297,6 +297,8 @@ app.get("/getAllVagas", async (req, res) => {
   const response = await sql.query`SELECT *
                                      FROM VAGA`;
   // TODO: filtrar SELECT
+
+  res.send(response.recordset)
 });
 
 app.delete("/delVaga", async (req, res) => {
