@@ -134,8 +134,13 @@ app.get("/login", async (req, res) => {
   
       if (queryEmpresa.rowsAffected[0] == 1) {
         const idEmpresa = queryEmpresa.recordset[0].cnpj;
+
+        const vagasEmpresa = await sql.query`SELECT *
+                                               FROM VAGA
+                                              WHERE cnpjEmpresa = ${idEmpresa}`;
   
-        res.send({ tipoUsuario: "empresa", idEmpresa: idEmpresa });
+        res.send({ tipoUsuario: "empresa", idEmpresa: idEmpresa, nomeEmpresa: queryEmpresa.recordset[0].nomeEmpresa, siteEmpresa: queryEmpresa.recordset[0].siteEmpresa,
+                   descricaoEmpresa: queryEmpresa.recordset[0].descricaoEmpresa, idLocalizacao: queryEmpresa.recordset[0].idLocalizacao, vagasEmpresa: vagasEmpresa.recordset});
       } else {
         res.status(500).send("Empresa não encontrada");
       }
@@ -143,12 +148,18 @@ app.get("/login", async (req, res) => {
       console.log("CPF recebido");
   
       const queryCandidato =
-        await sql.query`SELECT cpf FROM CANDIDATO WHERE cpf = ${credencial} AND senha = ${senha}`;
+        await sql.query`SELECT cpf, nomeCompleto, email, descircaoCandidato, curriculo, idEscolaridade, idInstituicao, idCurso, idLocalizacao, areasInteresse
+                          FROM CANDIDATO
+                         WHERE cpf = ${credencial}
+                           AND senha = ${senha}`;
   
       if (queryCandidato.rowsAffected[0] == 1) {
         const idCandidato = queryCandidato.recordset[0].cpf;
   
-        res.send({ tipoUsuario: "candidato", idCandidato: idCandidato });
+        res.send({ tipoUsuario: "candidato", idCandidato: idCandidato, nomeCompleto: queryCandidato.recordset[0].nomeCompleto,
+                   email: queryCandidato.recordset[0].email, descricaoCandidato: queryCandidato.recordset[0].descricaoCandidato, curriculo: queryCandidato.recordset[0].curriculo,
+                   idEscolaridade: queryCandidato.recordset[0].idEscolaridade, idInstituicao: queryCandidato.recordset[0].idInstituicao, idCurso: queryCandidato.recordset[0].idCurso,
+                   idLocalizacao: queryCandidato.recordset[0].idLocalizacao, areasInteresse: queryCandidato.recordset[0].areasInteresse});
       } else {
         res.status(500).send("Candidato não encontrado");
       }
@@ -159,8 +170,6 @@ app.get("/login", async (req, res) => {
     console.log(error)
     res.status(500).send("Algo deu errado!");
   }
-
-  
 });
 
 app.post("/cadastraVaga", async (req, res) => {
