@@ -120,6 +120,7 @@ app.post("/cadastro", async (req, res) => {
 
 app.get("/login", async (req, res) => {
   const corpo = req.body;
+  console.log(req)
   console.log(corpo)
   const credencial = corpo.credencial;
   const senha = corpo.senha;
