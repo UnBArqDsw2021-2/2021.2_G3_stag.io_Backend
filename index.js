@@ -136,9 +136,13 @@ app.get("/login", async (req, res) => {
         const vagasEmpresa = await sql.query`SELECT *
                                                FROM VAGA
                                               WHERE cnpjEmpresa = ${idEmpresa}`;
+
+        const localEmpresa = await sql.query`SELECT *
+                                               FROM LOCALIZACAO
+                                              WHERE idLocalizacao = ${queryEmpresa.recordset[0].idLocalizacao}`
   
         res.send({ tipoUsuario: "empresa", idEmpresa: idEmpresa, nomeEmpresa: queryEmpresa.recordset[0].nomeEmpresa, siteEmpresa: queryEmpresa.recordset[0].siteEmpresa,
-                   descricaoEmpresa: queryEmpresa.recordset[0].descricaoEmpresa, idLocalizacao: queryEmpresa.recordset[0].idLocalizacao, vagasEmpresa: vagasEmpresa.recordset});
+                   descricaoEmpresa: queryEmpresa.recordset[0].descricaoEmpresa, uf: localEmpresa.recordset[0].uf, cidade: localEmpresa.recordset[0].cidade, vagasEmpresa: vagasEmpresa.recordset});
       } else {
         res.status(500).send("Empresa não encontrada");
       }
@@ -146,18 +150,22 @@ app.get("/login", async (req, res) => {
       console.log("CPF recebido");
   
       const queryCandidato =
-        await sql.query`SELECT cpf, nomeCompleto, email, descircaoCandidato, curriculo, idEscolaridade, idInstituicao, idCurso, idLocalizacao, areasInteresse
+        await sql.query`SELECT cpf, nomeCompleto, email, descricaoCandidato, curriculo, idEscolaridade, idInstituicao, idCurso, idLocalizacao, areasInteresse
                           FROM CANDIDATO
                          WHERE cpf = ${credencial}
                            AND senha = ${senha}`;
   
       if (queryCandidato.rowsAffected[0] == 1) {
         const idCandidato = queryCandidato.recordset[0].cpf;
+
+        const localCandidato = await sql.query`SELECT *
+                                                 FROM LOCALIZACAO
+                                                WHERE idLocalizacao = ${queryCandidato.recordset[0].idLocalizacao}`
   
         res.send({ tipoUsuario: "candidato", idCandidato: idCandidato, nomeCompleto: queryCandidato.recordset[0].nomeCompleto,
                    email: queryCandidato.recordset[0].email, descricaoCandidato: queryCandidato.recordset[0].descricaoCandidato, curriculo: queryCandidato.recordset[0].curriculo,
                    idEscolaridade: queryCandidato.recordset[0].idEscolaridade, idInstituicao: queryCandidato.recordset[0].idInstituicao, idCurso: queryCandidato.recordset[0].idCurso,
-                   idLocalizacao: queryCandidato.recordset[0].idLocalizacao, areasInteresse: queryCandidato.recordset[0].areasInteresse});
+                   uf: localCandidato.recordset[0].uf, cidade: localCandidato.recordset[0].cidade, areasInteresse: queryCandidato.recordset[0].areasInteresse});
       } else {
         res.status(500).send("Candidato não encontrado");
       }
