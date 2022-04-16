@@ -291,6 +291,16 @@ app.get("/getVagasCandidato", async (req, res) => {
   res.send(response.recordset);
 });
 
+app.get("/getVagasEmpresa", async (req, res) => {
+  const cnpjEmpresa = req.query.cnpjEmpresa;
+
+  const response = await sql.query`SELECT *
+                                     FROM VAGA
+                                    WHERE cnpjEmpresa = ${cnpjEmpresa}`;
+
+  res.send(response.recordset);
+});
+
 app.get("/getAllVagas", async (req, res) => {
   // TODO: receber filtros
 
