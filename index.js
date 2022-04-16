@@ -118,7 +118,7 @@ app.post("/cadastro", async (req, res) => {
   }
 });
 
-app.get("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
   const corpo = req.body;
   const credencial = corpo.credencial;
   const senha = corpo.senha;
@@ -228,7 +228,7 @@ app.put("/atualizarVaga", async (req,res) => {
 })
 
 //Função que recupera um candidato a partir de seu cpf
-app.get("/getCandidato", async (req, res) => {
+app.post("/getCandidato", async (req, res) => {
   const cpfCandidato = req.body.cpfCandidato;
 
   const response = await sql.query`SELECT *
@@ -261,7 +261,7 @@ app.post("/candidataVaga", async (req, res) => {
   }
 });
 
-app.get("/getVaga", async (req, res) => {
+app.post("/getVaga", async (req, res) => {
   const idVaga = req.body.idVaga;
 
   const response = await sql.query`SELECT *
@@ -271,7 +271,7 @@ app.get("/getVaga", async (req, res) => {
   res.send(response.recordset);
 });
 
-app.get("/getVagasCandidato", async (req, res) => {
+app.post("/getVagasCandidato", async (req, res) => {
   const cpfCandidato = req.body.cpfCandidato;
 
   const response = await sql.query`SELECT V.*
@@ -282,7 +282,7 @@ app.get("/getVagasCandidato", async (req, res) => {
   res.send(response.recordset);
 });
 
-app.get("/getAllVagas", async (req, res) => {
+app.post("/getAllVagas", async (req, res) => {
   // TODO: receber filtros
 
   const response = await sql.query`SELECT *
