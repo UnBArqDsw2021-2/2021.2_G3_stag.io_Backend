@@ -123,39 +123,42 @@ app.get("/login", async (req, res) => {
   const credencial = corpo.credencial;
   const senha = corpo.senha;
 
-  if (credencial === undefined || senha=== undefined){
+  try {
+    if (credencial.length == 14) {
+      console.log("CNPJ recebido");
+  
+      const queryEmpresa =
+        await sql.query`SELECT * from EMPRESA WHERE cnpj=${credencial} AND senha=${senha}`;
+  
+      if (queryEmpresa.rowsAffected[0] == 1) {
+        const idEmpresa = queryEmpresa.recordset[0].cnpj;
+  
+        res.send({ tipoUsuario: "empresa", idEmpresa: idEmpresa });
+      } else {
+        res.status(500).send("Empresa não encontrada");
+      }
+    } else if (credencial.length == 11) {
+      console.log("CPF recebido");
+  
+      const queryCandidato =
+        await sql.query`SELECT cpf FROM CANDIDATO WHERE cpf = ${credencial} AND senha = ${senha}`;
+  
+      if (queryCandidato.rowsAffected[0] == 1) {
+        const idCandidato = queryCandidato.recordset[0].cpf;
+  
+        res.send({ tipoUsuario: "candidato", idCandidato: idCandidato });
+      } else {
+        res.status(500).send("Candidato não encontrado");
+      }
+    } else {
+      res.status(500).send("Algo deu errado!");
+    }
+  } catch (error) {
+    console.log(error)
     res.status(500).send("Algo deu errado!");
   }
 
-  if (credencial.length == 14) {
-    console.log("CNPJ recebido");
-
-    const queryEmpresa =
-      await sql.query`SELECT * from EMPRESA WHERE cnpj=${credencial} AND senha=${senha}`;
-
-    if (queryEmpresa.rowsAffected[0] == 1) {
-      const idEmpresa = queryEmpresa.recordset[0].cnpj;
-
-      res.send({ tipoUsuario: "empresa", idEmpresa: idEmpresa });
-    } else {
-      res.status(500).send("Empresa não encontrada");
-    }
-  } else if (credencial.length == 11) {
-    console.log("CPF recebido");
-
-    const queryCandidato =
-      await sql.query`SELECT cpf FROM CANDIDATO WHERE cpf = ${credencial} AND senha = ${senha}`;
-
-    if (queryCandidato.rowsAffected[0] == 1) {
-      const idCandidato = queryCandidato.recordset[0].cpf;
-
-      res.send({ tipoUsuario: "candidato", idCandidato: idCandidato });
-    } else {
-      res.status(500).send("Candidato não encontrado");
-    }
-  } else {
-    res.status(500).send("Algo deu errado!");
-  }
+  
 });
 
 app.post("/cadastraVaga", async (req, res) => {
