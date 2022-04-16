@@ -311,8 +311,13 @@ app.get("/getVagasEmpresa", async (req, res) => {
 app.get("/getAllVagas", async (req, res) => {
   // TODO: receber filtros
 
-  const response = await sql.query`SELECT *
-                                     FROM VAGA`;
+  const response = await sql.query`SELECT v.idVaga, v.tituloVaga, v.descricaoVaga, v.modeloTrabalho, v.cargaHoraria, v.requisitos, v.privilegios, v. tags, v.bolsa, v.status,
+                                          V.cnpjEmpresa, E.nomeEmpresa,
+                                          ESC.nomeEscolaridade, L.uf, L.cidade
+                                     FROM VAGA V INNER JOIN
+                                          EMPRESA E ON E.cnpj = V.cnpjEmpresa INNER JOIN
+                                          LOCALIZACAO L ON L.idLocalizacao = v.idLocalizacao INNER JOIN
+                                          ESCOLARIDADE ESC ON ESC.idEscolaridade = V.idEscolaridade`;
   // TODO: filtrar SELECT
 
   res.send(response.recordset)
